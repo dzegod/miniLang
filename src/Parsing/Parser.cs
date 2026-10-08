@@ -1,6 +1,6 @@
 namespace miniLang;
 
-public class Parser
+public sealed class Parser
 {
     private readonly List<Token> _tokens;
     private int _pos = 0;

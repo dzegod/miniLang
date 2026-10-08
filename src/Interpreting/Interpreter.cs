@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace miniLang;
 
-public class Interpreter
+public sealed class Interpreter
 {
     private Environment _environment = new();
 

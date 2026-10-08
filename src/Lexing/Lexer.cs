@@ -1,19 +1,24 @@
 namespace miniLang;
 
-public class Lexer
+public sealed class Lexer
 {
 
-    private static readonly Dictionary<string, TokenType> Keywords = new()
-    
+    private static readonly Dictionary<string, TokenType> Keywords;
+
+    static Lexer()
     {
-        { "let", TokenType.Let },
-        { "print", TokenType.Print },
-        { "if", TokenType.If },
-        { "else", TokenType.Else },
-        { "while", TokenType.While },
-        { "true", TokenType.True },
-        { "false", TokenType.False }
-    };
+        Keywords = new Dictionary<string, TokenType>
+        {
+            { "let", TokenType.Let },
+            { "print", TokenType.Print },
+            { "if", TokenType.If },
+            { "else", TokenType.Else },
+            { "while", TokenType.While },
+            { "true", TokenType.True },
+            { "false", TokenType.False }
+        };
+    }
+    
     public static List<Token> Scan(string source)
     {
         var tokens = new List<Token>();
