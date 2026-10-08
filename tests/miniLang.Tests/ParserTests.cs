@@ -38,8 +38,8 @@ public class ParserTests
     {
         var program = ParseProgram("let x = 5; print x;");
         Assert.Equal(2, program.Count);
-        Assert.Equal(new LetStatement("x", new NumberExpression(5)), program[0]);
-        Assert.Equal(new PrintStatement(new VariableExpression("x")), program[1]);
+        Assert.Equal(new LetStatement("x", new NumberExpression(5)) { Line = 1 }, program[0]);
+        Assert.Equal(new PrintStatement(new VariableExpression("x")) { Line = 1 }, program[1]);
     }
 
     [Theory]
@@ -50,5 +50,27 @@ public class ParserTests
     public void ThrowsOnInvalidSyntax(string source)
     {
         Assert.Throws<ParseError>(() => ParseProgram(source));
+    }
+
+    [Fact]
+    public void ParsesStringLiteral()
+    {
+        Assert.Equal(new StringExpression("hi"), ParseExpr("\"hi\""));
+    }
+
+    [Fact]
+    public void StatementsRememberTheirLine()
+    {
+        var program = ParseProgram("let x = 1;\n\nprint x;");
+        Assert.Equal(1, program[0].Line);
+        Assert.Equal(3, program[1].Line);
+    }
+
+    [Fact]
+    public void ParseErrorReportsLineNumber()
+    {
+        var error = Assert.Throws<ParseError>(() => ParseProgram("let x = 1;\nlet y = 2\nprint y;"));
+        Assert.Equal(3, error.Line);
+        Assert.Equal("[line 3] Expected ';' after expression", error.Message);
     }
 }

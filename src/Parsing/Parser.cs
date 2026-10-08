@@ -63,7 +63,7 @@ public class Parser
 
             if (!Check(TokenType.RParen))
             {
-                throw new ParseError("Expected closing parenthesis");
+                throw Error("Expected closing parenthesis");
             }
             Advance();
             return expr;
@@ -78,12 +78,29 @@ public class Parser
         {
             return new VariableExpression(token.Lexeme);
         }
-        throw new ParseError($"Unexpected token: {token.Type}");
+        if (token.Type == TokenType.String)
+        {
+            return new StringExpression(token.Lexeme);
+        }
+        throw new ParseError($"Unexpected token: {token.Type}", token.Line);
     }
 
-    private Token Advance() => _tokens[_pos++];
+    private Token Peek() => _pos < _tokens.Count ? _tokens[_pos] : _tokens[^1];
 
-    private bool Check(TokenType type) => _pos < _tokens.Count && _tokens[_pos].Type == type;
+    private Token Advance()
+    {
+        var token = Peek();
+        if (token.Type != TokenType.Eof)
+        {
+            _pos++;
+        }
+        return token;
+    }
+
+    private bool Check(TokenType type) => Peek().Type == type;
+
+    // Creates a ParseError that points at the line of the current token.
+    private ParseError Error(string message) => new ParseError(message, Peek().Line);
 
     public List<Statement> ParseProgram()
     {
@@ -95,27 +112,34 @@ public class Parser
         return statements;
     }
 
+    // Remembers the line a statement starts on, so runtime errors can report it.
     public Statement ParseStatement()
+    {
+        var line = Peek().Line;
+        return ParseStatementKind() with { Line = line };
+    }
+
+    private Statement ParseStatementKind()
     {
         if(Check(TokenType.Let))
         {
             Advance();
             if (!Check(TokenType.Identifier))
             {
-                throw new ParseError("Expected variable name after 'let'");
+                throw Error("Expected variable name after 'let'");
             }
             var name = Advance().Lexeme;
 
             if(!Check(TokenType.Equal))
             {
-                throw new ParseError("Expected '=' after variable name");
+                throw Error("Expected '=' after variable name");
             }
             Advance();
             var value = ParseExpression();
 
             if(!Check(TokenType.Semicolon))
             {
-                throw new ParseError("Expected ';' after expression");
+                throw Error("Expected ';' after expression");
             }
             Advance();
 
@@ -129,7 +153,7 @@ public class Parser
 
             if (!Check(TokenType.Semicolon))
             {
-                throw new ParseError("Expected ';' after expression");
+                throw Error("Expected ';' after expression");
             }
             Advance();
 
@@ -145,7 +169,7 @@ public class Parser
             }
             if (!Check(TokenType.RBrace))
             {
-                throw new ParseError("Expected '}' after block");
+                throw Error("Expected '}' after block");
             }
             Advance();
             return new BlockStatement(statements);
@@ -157,7 +181,7 @@ public class Parser
 
             if (!Check(TokenType.LParen))
             {
-                throw new ParseError("Expected '(' after 'if'");
+                throw Error("Expected '(' after 'if'");
             }
             Advance();
 
@@ -165,7 +189,7 @@ public class Parser
 
             if (!Check(TokenType.RParen))
             {
-                throw new ParseError("Expected ')' after condition");
+                throw Error("Expected ')' after condition");
             }
             Advance();
 
@@ -190,27 +214,27 @@ public class Parser
             return ParseWhile();
         }
 
-        throw new ParseError($"Unexpected token: {(_pos < _tokens.Count ? _tokens[_pos].Type : TokenType.Eof)}");
+        throw Error($"Unexpected token: {Peek().Type}");
     }
 
     private Statement ParseAssignment()
     {
         if (!Check(TokenType.Identifier))
         {
-            throw new ParseError("Expected variable name for assignment");
+            throw Error("Expected variable name for assignment");
         }
         var name = Advance().Lexeme;
 
         if (!Check(TokenType.Equal))
         {
-            throw new ParseError("Expected '=' after variable name");
+            throw Error("Expected '=' after variable name");
         }
         Advance();
         var value = ParseExpression();
 
         if (!Check(TokenType.Semicolon))
         {
-            throw new ParseError("Expected ';' after expression");
+            throw Error("Expected ';' after expression");
         }
         Advance();
 
@@ -223,7 +247,7 @@ public class Parser
 
         if (!Check(TokenType.LParen))
         {
-            throw new ParseError("Expected '(' after 'while'");
+            throw Error("Expected '(' after 'while'");
         }
         Advance();
 
@@ -231,7 +255,7 @@ public class Parser
 
         if (!Check(TokenType.RParen))
         {
-            throw new ParseError("Expected ')' after condition");
+            throw Error("Expected ')' after condition");
         }
         Advance();
 

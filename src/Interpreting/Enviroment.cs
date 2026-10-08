@@ -2,9 +2,9 @@ namespace miniLang;
 
 public class Environment
 {
-    private readonly Dictionary<string, double> _variables = new();
+    private readonly Dictionary<string, object> _variables = new();
 
-    public void Define(string name, double value) => _variables[name] = value;
+    public void Define(string name, object value) => _variables[name] = value;
 
     private readonly Environment? _parent;
     public Environment(Environment? parent = null)
@@ -12,7 +12,7 @@ public class Environment
         _parent = parent;
     }
 
-    public double Get(string name)
+    public object Get(string name)
     {
         if (_variables.TryGetValue(name, out var value))
         {
@@ -25,7 +25,7 @@ public class Environment
         throw new RuntimeError($"Undefined variable: {name}");
     }
 
-    public double Assign(string name, double value)
+    public object Assign(string name, object value)
     {
         if (_variables.ContainsKey(name))
         {

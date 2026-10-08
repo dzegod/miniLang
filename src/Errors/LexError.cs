@@ -2,5 +2,10 @@ namespace miniLang;
 
 public class LexError : Exception
 {
-    public LexError(string message) : base(message) { }
+    public int Line { get; }
+
+    public LexError(string message, int line) : base($"[line {line}] {message}")
+    {
+        Line = line;
+    }
 }

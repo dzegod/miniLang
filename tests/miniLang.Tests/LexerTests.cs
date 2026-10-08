@@ -49,4 +49,19 @@ public class LexerTests
     {
         Assert.Throws<LexError>(() => Lexer.Scan("1 @ 2"));
     }
+
+    [Fact]
+    public void TokensRememberTheirLine()
+    {
+        var tokens = Lexer.Scan("let x = 1;\nprint x;");
+        Assert.Equal(1, tokens[0].Line);
+        Assert.Equal(2, tokens[5].Line);
+    }
+
+    [Fact]
+    public void LexErrorReportsLineNumber()
+    {
+        var error = Assert.Throws<LexError>(() => Lexer.Scan("1;\n2;\n3 @ 4;"));
+        Assert.Equal(3, error.Line);
+    }
 }

@@ -2,5 +2,10 @@ namespace miniLang;
 
 public class ParseError : Exception
 {
-    public ParseError(string message) : base(message) { }
+    public int Line { get; }
+
+    public ParseError(string message, int line) : base($"[line {line}] {message}")
+    {
+        Line = line;
+    }
 }

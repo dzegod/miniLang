@@ -1,7 +1,27 @@
-﻿using miniLang;
+using miniLang;
 
-var tokens = Lexer.Scan("let i = 0; while (i < 3) { print i; i = i + 1; }");
-var parser = new Parser(tokens);
-var program = parser.ParseProgram();
+var source = """
+    let name = "miniLang";
+    print "Hello from " + name + "!";
 
-new Interpreter().Interpret(program);
+    let i = 1;
+    while (i <= 3) {
+        print "i = " + i;
+        i = i + 1;
+    }
+
+    print y;
+    """;
+
+try
+{
+    var tokens = Lexer.Scan(source);
+    var parser = new Parser(tokens);
+    var program = parser.ParseProgram();
+
+    new Interpreter().Interpret(program);
+}
+catch (Exception error) when (error is LexError or ParseError or RuntimeError)
+{
+    Console.WriteLine($"{error.GetType().Name}: {error.Message}");
+}
