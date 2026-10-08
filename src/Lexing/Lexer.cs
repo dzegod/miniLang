@@ -66,7 +66,7 @@ public class Lexer
             {
                 if (i + 1 < source.Length && source[i + 1] == '=')
                 {
-                    tokens.Add(new Token(TokenType.Equal, "=="));
+                    tokens.Add(new Token(TokenType.EqualEqual, "=="));
                     i += 2;
                 }
                 else
@@ -82,6 +82,10 @@ public class Lexer
                 while (i < source.Length && source[i] != '"')
                 {
                     i++;
+                }
+                if (i >= source.Length)
+                {
+                    throw new LexError("Unterminated string literal");
                 }
                 string text = source[start..i];
                 tokens.Add(new Token(TokenType.String, text));
@@ -145,9 +149,13 @@ public class Lexer
                 tokens.Add(new Token(TokenType.RBrace, currentChar.ToString()));
                 i++;
             }
-            else
+            else if (char.IsWhiteSpace(currentChar))
             {
                 i++;
+            }
+            else
+            {
+                throw new LexError($"Unexpected character: '{currentChar}'");
             }
         }
 

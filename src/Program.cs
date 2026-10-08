@@ -1,12 +1,7 @@
 ﻿using miniLang;
 
-string[] tests = { "10 - 2 - 3", "2 * (3 + 4)", "20 / 4 / 5", "(2 + 3) * (4 - 1)" };
+var tokens = Lexer.Scan("print 3 < 5; print 2 + 2 == 4; print 10 <= 3;");
+var parser = new Parser(tokens);
+var program = parser.ParseProgram();
 
-foreach (var test in tests)
-{
-    var tokens = Lexer.Scan(test);
-    var parser = new Parser(tokens);
-    var expr = parser.ParseExpression();
-    var result = new Interpreter().Evaluate(expr);
-    Console.WriteLine($"{test} = {result}");
-}
+new Interpreter().Interpret(program);
