@@ -14,6 +14,8 @@ public record BlockStatement(List<Statement> Statements) : Statement;
 
 public record IfStatement(Expression Condition, Statement ThenBranch, Statement? ElseBranch) : Statement;
 
+public record WhileStatement(Expression Condition, Statement Body) : Statement;
+
 public record VariableExpression(string Name) : Expression;
 
 public record AssignmentStatement(string Name, Expression Value) : Statement;

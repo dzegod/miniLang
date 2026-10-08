@@ -185,6 +185,10 @@ public class Parser
         {
             return ParseAssignment();
         }
+        if (Check(TokenType.While))
+        {
+            return ParseWhile();
+        }
 
         throw new ParseError($"Unexpected token: {(_pos < _tokens.Count ? _tokens[_pos].Type : TokenType.Eof)}");
     }
@@ -212,4 +216,27 @@ public class Parser
 
         return new AssignmentStatement(name, value);
     }
+
+    private Statement ParseWhile()
+    {
+        Advance();
+
+        if (!Check(TokenType.LParen))
+        {
+            throw new ParseError("Expected '(' after 'while'");
+        }
+        Advance();
+
+        var condition = ParseExpression();
+
+        if (!Check(TokenType.RParen))
+        {
+            throw new ParseError("Expected ')' after condition");
+        }
+        Advance();
+
+        var body = ParseStatement();
+
+        return new WhileStatement(condition, body);
+    } 
 }

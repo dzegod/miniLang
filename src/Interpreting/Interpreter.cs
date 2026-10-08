@@ -28,6 +28,15 @@ public class Interpreter
             return;
         }
 
+        if (statement is WhileStatement whileStatement)
+        {
+            while (Evaluate(whileStatement.Condition) != 0)
+            {
+                Execute(whileStatement.Body);
+            }
+            return;
+        }
+
         if (statement is PrintStatement printStatement)
         {
             Console.WriteLine(Evaluate(printStatement.Value));
