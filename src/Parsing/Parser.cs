@@ -100,7 +100,7 @@ public sealed class Parser
     private bool Check(TokenType type) => Peek().Type == type;
 
     // Creates a ParseError that points at the line of the current token.
-    private ParseError Error(string message) => new ParseError(message, Peek().Line);
+    private ParseError Error(string message) => new ParseError(message, line: Peek().Line);
 
     public List<Statement> ParseProgram()
     {

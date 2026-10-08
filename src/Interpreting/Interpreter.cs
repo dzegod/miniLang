@@ -24,7 +24,7 @@ public sealed class Interpreter
         }
         catch (RuntimeError error) when (error.Line is null)
         {
-            throw new RuntimeError(error.Reason, statement.Line);
+            throw new RuntimeError(error.Reason, line: statement.Line);
         }
     }
 
