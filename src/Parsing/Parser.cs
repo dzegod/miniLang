@@ -181,6 +181,35 @@ public class Parser
             return new IfStatement(condition, thenBranch, elseBranch);
         }
 
+        if (Check(TokenType.Identifier))
+        {
+            return ParseAssignment();
+        }
+
         throw new ParseError($"Unexpected token: {(_pos < _tokens.Count ? _tokens[_pos].Type : TokenType.Eof)}");
+    }
+
+    private Statement ParseAssignment()
+    {
+        if (!Check(TokenType.Identifier))
+        {
+            throw new ParseError("Expected variable name for assignment");
+        }
+        var name = Advance().Lexeme;
+
+        if (!Check(TokenType.Equal))
+        {
+            throw new ParseError("Expected '=' after variable name");
+        }
+        Advance();
+        var value = ParseExpression();
+
+        if (!Check(TokenType.Semicolon))
+        {
+            throw new ParseError("Expected ';' after expression");
+        }
+        Advance();
+
+        return new AssignmentStatement(name, value);
     }
 }

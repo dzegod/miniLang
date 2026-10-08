@@ -21,6 +21,13 @@ public class Interpreter
             return;
         }
 
+        if (statement is AssignmentStatement assignmentStatement)
+        {
+            var value = Evaluate(assignmentStatement.Value);
+            _environment.Assign(assignmentStatement.Name, value);
+            return;
+        }
+
         if (statement is PrintStatement printStatement)
         {
             Console.WriteLine(Evaluate(printStatement.Value));

@@ -24,4 +24,18 @@ public class Environment
         }
         throw new RuntimeError($"Undefined variable: {name}");
     }
+
+    public double Assign(string name, double value)
+    {
+        if (_variables.ContainsKey(name))
+        {
+            _variables[name] = value;
+            return value;
+        }
+        if (_parent != null)
+        {
+            return _parent.Assign(name, value);
+        }
+        throw new RuntimeError($"Undefined variable: {name}");
+    }
 }
